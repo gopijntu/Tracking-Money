@@ -3,6 +3,7 @@ package com.example.expensetracker.ui.transaction
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Telephony
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -18,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.R
 import com.example.expensetracker.data.model.Transaction
 import com.example.expensetracker.databinding.FragmentTransactionsBinding
-import com.example.expensetracker.util.SmsReader
+import com.example.expensetracker.util.SmsParser
 import com.google.android.material.snackbar.Snackbar
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -32,6 +33,7 @@ class TransactionsFragment : Fragment() {
 
     private val viewModel: TransactionViewModel by viewModels()
     private lateinit var transactionAdapter: TransactionAdapter
+    private lateinit var sharedPrefManager: com.example.expensetracker.util.SharedPrefManager
 
     private val createFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -57,10 +59,13 @@ class TransactionsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        sharedPrefManager = com.example.expensetracker.util.SharedPrefManager(requireContext())
 
         setupRecyclerView()
         observeViewModel()
         setupFab()
+
+        // The initial scan should be triggered from MainActivity after login
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -91,10 +96,10 @@ class TransactionsFragment : Fragment() {
         try {
             requireContext().contentResolver.openOutputStream(uri)?.use { outputStream ->
                 outputStream.bufferedWriter().use { writer ->
-                    writer.appendLine("ID,Date,Amount,Category,Merchant,SMS Snippet")
+                    writer.appendLine("ID,Date,Amount,Type,Category,Merchant,SMS Body")
                     viewModel.allTransactions.value?.forEach { transaction ->
                         val formattedDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(transaction.date))
-                        writer.appendLine("${transaction.id},${formattedDate},${transaction.amount},${transaction.category},\"${transaction.merchant}\",\"${transaction.smsSnippet.replace("\"", "\"\"")}\"")
+                        writer.appendLine("${transaction.id},${formattedDate},${transaction.amount},${transaction.type},${transaction.category},\"${transaction.merchant}\",\"${transaction.smsBody.replace("\"", "\"\"")}\"")
                     }
                 }
                 Snackbar.make(binding.root, "Exported to CSV successfully.", Snackbar.LENGTH_LONG).show()
@@ -129,10 +134,39 @@ class TransactionsFragment : Fragment() {
     }
 
     private fun scanSms() {
-        val smsReader = SmsReader(requireActivity().contentResolver)
-        val transactions = smsReader.readSms()
-        transactions.forEach { viewModel.insert(it) }
-        Snackbar.make(binding.root, "Scanned ${transactions.size} new transactions.", Snackbar.LENGTH_LONG).show()
+        val syncTime = sharedPrefManager.getLastSyncedDate()
+        val newTransactions = mutableListOf<Transaction>()
+
+        val cursor = requireActivity().contentResolver.query(
+            Telephony.Sms.CONTENT_URI,
+            null,
+            "${Telephony.Sms.DATE} > ?",
+            arrayOf(syncTime.toString()),
+            Telephony.Sms.DEFAULT_SORT_ORDER
+        )
+
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val bodyIndex = it.getColumnIndexOrThrow(Telephony.Sms.BODY)
+                val dateIndex = it.getColumnIndexOrThrow(Telephony.Sms.DATE)
+
+                do {
+                    val smsBody = it.getString(bodyIndex)
+                    val smsDate = it.getLong(dateIndex)
+                    val parsedTransaction = SmsParser.parseTransactionFromSms(smsBody)
+                    if (parsedTransaction != null) {
+                        parsedTransaction.date = smsDate
+                        newTransactions.add(parsedTransaction)
+                    }
+                } while (it.moveToNext())
+            }
+        }
+
+        if (newTransactions.isNotEmpty()) {
+            newTransactions.forEach { viewModel.insert(it) }
+            sharedPrefManager.setLastSyncedDate(System.currentTimeMillis())
+        }
+        Snackbar.make(binding.root, "Scanned ${newTransactions.size} new transactions.", Snackbar.LENGTH_LONG).show()
     }
 
     private fun setupSwipeToDelete() {

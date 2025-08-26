@@ -15,7 +15,9 @@ class BudgetViewModel(application: Application) : AndroidViewModel(application) 
     val allBudgets: LiveData<List<Budget>>
 
     init {
-        val budgetDao = AppDatabase.getDatabase(application).budgetDao()
+        // TODO: Replace hardcoded passphrase with one from user's master password
+        val database = AppDatabase.getDatabase(application, "test_password")
+        val budgetDao = database.budgetDao()
         repository = BudgetRepository(budgetDao)
         allBudgets = repository.allBudgets
     }

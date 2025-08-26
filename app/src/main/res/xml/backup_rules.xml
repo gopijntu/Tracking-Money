@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude the encrypted database and shared preferences from backup -->
+    <exclude domain="database" path="expense_tracker_database" />
+    <exclude domain="sharedpref" path="expense_tracker_prefs.xml" />
+</full-backup-content>

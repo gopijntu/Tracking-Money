@@ -25,4 +25,7 @@ interface TransactionDao {
 
     @Query("DELETE FROM transactions WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE date >= :timestamp")
+    fun getSpendSince(timestamp: Long): LiveData<Double>
 }
