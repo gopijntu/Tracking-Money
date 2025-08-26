@@ -17,11 +17,12 @@ class SmsReader(private val contentResolver: ContentResolver) {
 
     fun readSms(): List<Transaction> {
         val transactions = mutableListOf<Transaction>()
+        val oneDayAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000)
         val cursor = contentResolver.query(
             Telephony.Sms.CONTENT_URI,
             null,
-            null,
-            null,
+            "${Telephony.Sms.DATE} >= ?",
+            arrayOf(oneDayAgo.toString()),
             Telephony.Sms.DEFAULT_SORT_ORDER
         )
 
