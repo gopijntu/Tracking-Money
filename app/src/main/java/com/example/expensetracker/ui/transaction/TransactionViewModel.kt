@@ -15,7 +15,9 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     val allTransactions: LiveData<List<Transaction>>
 
     init {
-        val transactionDao = AppDatabase.getDatabase(application).transactionDao()
+        // TODO: Replace hardcoded passphrase with one from user's master password
+        val database = AppDatabase.getDatabase(application, "test_password")
+        val transactionDao = database.transactionDao()
         repository = TransactionRepository(transactionDao)
         allTransactions = repository.allTransactions
     }

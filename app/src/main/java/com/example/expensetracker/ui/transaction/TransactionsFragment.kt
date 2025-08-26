@@ -55,8 +55,11 @@ class TransactionsFragment : Fragment() {
         return binding.root
     }
 
+    private lateinit var sharedPrefManager: com.example.expensetracker.util.SharedPrefManager
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        sharedPrefManager = com.example.expensetracker.util.SharedPrefManager(requireContext())
 
         setupRecyclerView()
         observeViewModel()
@@ -130,8 +133,17 @@ class TransactionsFragment : Fragment() {
 
     private fun scanSms() {
         val smsReader = SmsReader(requireActivity().contentResolver)
-        val transactions = smsReader.readSms()
-        transactions.forEach { viewModel.insert(it) }
+        val syncTime = if (sharedPrefManager.isFirstLaunch()) {
+            System.currentTimeMillis() - (24 * 60 * 60 * 1000) // 24 hours ago
+        } else {
+            sharedPrefManager.getLastSyncedDate()
+        }
+
+        val transactions = smsReader.readSmsSince(syncTime)
+        if (transactions.isNotEmpty()) {
+            transactions.forEach { viewModel.insert(it) }
+            sharedPrefManager.setLastSyncedDate(System.currentTimeMillis())
+        }
         Snackbar.make(binding.root, "Scanned ${transactions.size} new transactions.", Snackbar.LENGTH_LONG).show()
     }
 

@@ -22,4 +22,8 @@ class TransactionRepository(private val transactionDao: TransactionDao) {
     fun getTransactionsByCategory(category: String): LiveData<List<Transaction>> {
         return transactionDao.getTransactionsByCategory(category)
     }
+
+    fun getSpendSince(timestamp: Long): LiveData<Double> {
+        return transactionDao.getSpendSince(timestamp)
+    }
 }

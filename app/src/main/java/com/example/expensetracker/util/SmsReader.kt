@@ -15,14 +15,13 @@ class SmsReader(private val contentResolver: ContentResolver) {
         "GROCERIES" to listOf("dmart", "reliance fresh", "zepto", "blinkit", "bigbasket", "amazon", "flipkart", "myntra", "meesho", "ajio")
     )
 
-    fun readSms(): List<Transaction> {
+    fun readSmsSince(timestamp: Long): List<Transaction> {
         val transactions = mutableListOf<Transaction>()
-        val oneDayAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000)
         val cursor = contentResolver.query(
             Telephony.Sms.CONTENT_URI,
             null,
-            "${Telephony.Sms.DATE} >= ?",
-            arrayOf(oneDayAgo.toString()),
+            "${Telephony.Sms.DATE} > ?",
+            arrayOf(timestamp.toString()),
             Telephony.Sms.DEFAULT_SORT_ORDER
         )
 
