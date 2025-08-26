@@ -8,16 +8,18 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_category"
+        <AutoCompleteTextView
+            android:id="@+id/auto_complete_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Category" />
+            android:hint="Category"
+            android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_edit_text_amount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"

@@ -8,7 +8,7 @@ import java.util.regex.Pattern
 class SmsReader(private val contentResolver: ContentResolver) {
 
     private val transactionKeywords = listOf("debit", "debited", "spent", "charged", "paid")
-    private val amountPattern = Pattern.compile("Rs\\.?\\s?([0-9,]+\\.?[0-9]*)")
+    private val amountPattern = Pattern.compile("(?:Rs|INR|₹)\\.?\\s?([0-9,]+\\.?[0-9]*)", Pattern.CASE_INSENSITIVE)
     private val keywordMapping = mapOf(
         "MEDICAL" to listOf("pharmacy", "apollo", "medplus", "netmeds", "practo", "hospital", "clinic", "medicine"),
         "MOVIES" to listOf("bookmyshow", "inox", "pvr", "carnival", "paytm movies", "ticketnew"),

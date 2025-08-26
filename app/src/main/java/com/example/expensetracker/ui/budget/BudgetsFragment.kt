@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.expensetracker.data.model.Budget
 import com.example.expensetracker.databinding.FragmentBudgetsBinding
 import com.example.expensetracker.ui.transaction.TransactionViewModel
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
@@ -104,12 +106,16 @@ class BudgetsFragment : Fragment() {
 
     private fun showSetBudgetDialog(budget: Budget?) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_set_budget, null)
-        val categoryEditText = dialogView.findViewById<TextInputEditText>(R.id.edit_text_category)
+        val categoryAutoComplete = dialogView.findViewById<AutoCompleteTextView>(R.id.auto_complete_category)
         val amountEditText = dialogView.findViewById<TextInputEditText>(R.id.edit_text_amount)
 
+        val categories = listOf("Medical", "Groceries", "Movies", "Others")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categories)
+        categoryAutoComplete.setAdapter(adapter)
+
         if (budget != null) {
-            categoryEditText.setText(budget.category)
-            categoryEditText.isEnabled = false
+            categoryAutoComplete.setText(budget.category, false)
+            categoryAutoComplete.isEnabled = false
             amountEditText.setText(budget.limitAmount.toString())
         }
 
@@ -117,9 +123,9 @@ class BudgetsFragment : Fragment() {
             .setTitle(if (budget == null) "Set New Budget" else "Adjust Budget")
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
-                val category = categoryEditText.text.toString()
+                val category = categoryAutoComplete.text.toString()
                 val amount = amountEditText.text.toString().toDoubleOrNull()
-                if (category.isNotBlank() && amount != null) {
+                if (category.isNotBlank() && amount != null && categories.contains(category)) {
                     val monthYear = SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(Date())
                     budgetViewModel.insert(Budget(category, amount, monthYear))
                 }
