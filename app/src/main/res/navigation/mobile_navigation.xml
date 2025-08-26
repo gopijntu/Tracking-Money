@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_transactions">
+
+    <fragment
+        android:id="@+id/navigation_transactions"
+        android:name="com.example.expensetracker.ui.transaction.TransactionsFragment"
+        android:label="@string/title_transactions"
+        tools:layout="@layout/fragment_transactions">
+        <action
+            android:id="@+id/action_global_navigation_analytics"
+            app:destination="@id/navigation_analytics"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_global_navigation_budgets"
+            app:destination="@id/navigation_budgets"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_analytics"
+        android:name="com.example.expensetracker.ui.analytics.AnalyticsFragment"
+        android:label="@string/title_analytics"
+        tools:layout="@layout/fragment_analytics">
+        <action
+            android:id="@+id/action_global_navigation_transactions"
+            app:destination="@id/navigation_transactions"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left" />
+        <action
+            android:id="@+id/action_global_navigation_budgets"
+            app:destination="@id/navigation_budgets"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_budgets"
+        android:name="com.example.expensetracker.ui.budget.BudgetsFragment"
+        android:label="@string/title_budgets"
+        tools:layout="@layout/fragment_budgets">
+        <action
+            android:id="@+id/action_global_navigation_transactions"
+            app:destination="@id/navigation_transactions"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left" />
+        <action
+            android:id="@+id/action_global_navigation_analytics"
+            app:destination="@id/navigation_analytics"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left" />
+    </fragment>
+</navigation>

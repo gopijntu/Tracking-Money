@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#1A237E</color> <!-- Deep Blue -->
+    <color name="colorPrimaryDark">#0D1B59</color>
+    <color name="colorAccent">#00E5FF</color> <!-- Teal Accent -->
+
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="textColorSecondary">#BDBDBD</color>
+
+    <color name="background">#121212</color>
+    <color name="surface">#1E1E1E</color>
+
+    <color name="red">#F44336</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="green">#4CAF50</color>
+
+    <color name="gradient_start">#1A237E</color>
+    <color name="gradient_end">#00E5FF</color>
+</resources>
