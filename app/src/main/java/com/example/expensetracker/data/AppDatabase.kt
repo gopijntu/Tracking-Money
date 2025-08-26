@@ -8,7 +8,7 @@ import com.example.expensetracker.data.model.Budget
 import com.example.expensetracker.data.model.Transaction
 import net.sqlcipher.database.SupportFactory
 
-@Database(entities = [Transaction::class, Budget::class], version = 1, exportSchema = false)
+@Database(entities = [Transaction.class, Budget::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun transactionDao(): TransactionDao
@@ -27,6 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "expense_tracker_database"
                 )
                 .openHelperFactory(factory)
+                .fallbackToDestructiveMigration() // Added for simplicity
                 .build()
                 INSTANCE = instance
                 instance
